@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class PlayerMover : MonoBehaviour,IPlayerMoveService
 {
-    [SerializeField] private float _moveDuration;
     private List<GameObject> _wayPoints;
     private int _currentPointIndex;
     private bool _isMoving;
@@ -55,9 +54,9 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
 
         _isMoving = true;
         transform.DOKill();
-        var path = _wayPoints.Skip(_currentPointIndex).Select(t => t.transform.position).ToArray();
-        _pathDuration = Mathf.Min(2, path.Length * _moveDuration); //To avoid too long wait durations
-        transform.DOPath(path, _pathDuration).SetTarget(this).SetEase(Ease.Linear)
+        var currentPath = _wayPoints.Skip(_currentPointIndex).Select(t => t.transform.position).ToArray();
+        _pathDuration = Mathf.Min(Constants.MAX_PATH_DURATION, currentPath.Length * Constants.POINT_MOVE_DURATION); //To avoid too long wait durations
+        transform.DOPath(currentPath, _pathDuration).SetTarget(this).SetEase(Ease.Linear)
             .OnComplete(() =>
             {
                 _isMoving = false;
@@ -69,7 +68,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
     {
         _isMoving = true;
         transform.DOKill();
-        transform.DOMove(_wayPoints[index].transform.position, _moveDuration).SetTarget(this).SetEase(Ease.Linear)
+        transform.DOMove(_wayPoints[index].transform.position, Constants.POINT_MOVE_DURATION).SetTarget(this).SetEase(Ease.Linear)
             .OnComplete(() =>
             {
                 _isMoving = false;
