@@ -7,10 +7,13 @@ using UnityEngine.UI;
 
 public class LevelHandler : MonoBehaviour,ILevelService
 {
-    #region Variables
+    #region Components
     [SerializeField] private Slider _progressSlider;
     [SerializeField] private TMP_Text _levelText;
     [SerializeField] private Transform _starTransform;
+    #endregion
+    
+    #region Variables
     private int _currentLevel, _currentLevelOnText, _currentExp;
     private Coroutine _barSetRoutine;
     private readonly List<float> _barTargets = new();
@@ -41,7 +44,7 @@ public class LevelHandler : MonoBehaviour,ILevelService
         _currentExp += Constants.EXP_AT_EACH_CLICK;
         //We set progress bar here because we will do some animations
         //if progress bar rate >= 1 (it means next level)
-        SetProgressBar();
+        SetProgressBar(ProgressRate);
         if (_currentExp < ExpForNextLevel) return;
 
         _currentExp -= ExpForNextLevel;
@@ -50,9 +53,9 @@ public class LevelHandler : MonoBehaviour,ILevelService
     
     /// With this method, we can spam the Get Exp button. It will do all of the progress
     /// bar animations in order. And update the level UI at the end of progress bar anim completion
-    private void SetProgressBar()
+    private void SetProgressBar(float value)
     {
-        _barTargets.Add(ProgressRate);
+        _barTargets.Add(value);
         _barSetRoutine ??= StartCoroutine(SetProgressBarRoutine());
     }
 
@@ -79,9 +82,10 @@ public class LevelHandler : MonoBehaviour,ILevelService
             }
             else
             {
-                //If our next target is smaller than our current progress, it means we passed to next level. So first fill the progress bar.
-                //Then on complete, update the UI. For safer approach, it's only an UI animation. Actual level is not restored & updated on here.
-                //It directly updated on GetExp() function.
+                //If our next target is smaller than our current progress or greater than 1,
+                //it means we passed to next level. So first fill the progress bar, then on complete,
+                //update the UI. For safer approach, it's only an UI animation. Actual level is not restored & updated on here.
+                //Real values of exp/level directly updated on AddExp() function.
                 yield return _progressSlider.DOValue(1, Constants.BAR_MOVE_DURATION).SetEase(Ease.Linear).WaitForCompletion();
                 UpdateLevelUIOnNextLevel();
                 
