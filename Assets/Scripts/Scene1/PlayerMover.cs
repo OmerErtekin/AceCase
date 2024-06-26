@@ -81,9 +81,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
                 _currentPointIndex = endIndex;
             });
     }
-
-
-
+    
     private void MoveToPoint(int index)
     {
         _isMoving = true;

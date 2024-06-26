@@ -20,7 +20,7 @@ public class LevelHandler : MonoBehaviour,ILevelService
     #endregion
 
     #region Properties
-    private int ExpForNextLevel => _currentLevel * Constants.EXP_AT_EACH_CLICK;
+    private int ExpForNextLevel => _currentLevel * Constants.LEVEL_EXP_MULTIPLIER;
     private float ProgressRate => _currentExp / (float)ExpForNextLevel;
     #endregion
 
