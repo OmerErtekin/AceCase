@@ -6,7 +6,7 @@ public class UIController : MonoBehaviour
     #region Components
     [SerializeField] private Button NextWaypointButton;
     [SerializeField] private Button GoToEndButton;
-    [SerializeField] private Button GoToEndOnPathButton;
+    [SerializeField] private Button GoToStartOnPathButton;
     [SerializeField] private Button GoToPreviousButton;
     [SerializeField] private Button GoToStartButton;
     private IPlayerMoveService _moveService;
@@ -16,7 +16,7 @@ public class UIController : MonoBehaviour
     {
         NextWaypointButton.onClick.AddListener(OnNextWaypoint);
         GoToEndButton.onClick.AddListener(OnGoToEnd);
-        GoToEndOnPathButton.onClick.AddListener(OnGoToEndOnPath);
+        GoToStartOnPathButton.onClick.AddListener(OnGoToStartOnPath);
         GoToPreviousButton.onClick.AddListener(OnGoToPreviousPoint);
         GoToStartButton.onClick.AddListener(OnGoToStart);
         _moveService = ServiceLocator.Instance.GetService<IPlayerMoveService>();
@@ -30,20 +30,20 @@ public class UIController : MonoBehaviour
 
     private void OnGoToEnd()
     {
-        _moveService.MoveToTheEnd();
-        Debug.Log("You clicked go to the end button!");
-    }
-    
-    private void OnGoToEndOnPath()
-    {
         _moveService.MoveToEndOnPath();
-        Debug.Log("You clicked go to the end on path button!");
+        Debug.Log("You clicked go to the end button!");
     }
     
     private void OnGoToPreviousPoint()
     {
         _moveService.MoveToPreviousPoint();
         Debug.Log("You clicked go to the previous point button!");
+    }
+    
+    private void OnGoToStartOnPath()
+    {
+        _moveService.MoveToStartOnPath();
+        Debug.Log("You clicked go to start on path button!");
     }
     
     private void OnGoToStart()

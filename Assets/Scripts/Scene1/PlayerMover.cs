@@ -37,12 +37,6 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
         MoveToPoint(_currentPointIndex > 0 ? _currentPointIndex - 1 : _wayPoints.Count - 1);
     }
 
-    public void MoveToTheEnd()
-    {
-        if(_isMoving || _currentPointIndex == _wayPoints.Count -1) return;
-
-        MoveToPoint(_wayPoints.Count-1);
-    }
 
     public void MoveToStart()
     {
@@ -55,17 +49,40 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
     {
         if(_isMoving || _currentPointIndex == _wayPoints.Count -1) return;
 
+        MoveOnPath(_currentPointIndex,_wayPoints.Count-1,false);
+    }
+    
+    public void MoveToStartOnPath()
+    {
+        if(_isMoving || _currentPointIndex == 0) return;
+
+        MoveOnPath(_currentPointIndex,0,true);
+    }
+
+    private void MoveOnPath(int startIndex, int endIndex,bool isBackwards)
+    {
         _isMoving = true;
         transform.DOKill();
-        var currentPath = _wayPoints.Skip(_currentPointIndex).Select(t => t.transform.position).ToArray();
+        Vector3[] currentPath;
+        if (!isBackwards)
+        {
+            currentPath = _wayPoints.GetRange(startIndex, endIndex - startIndex + 1).Select(t => t.transform.position).ToArray();
+        }
+        else
+        {
+            currentPath = _wayPoints.GetRange(0,_currentPointIndex).Select(t => t.transform.position).Reverse().ToArray();
+        }
+        
         _pathDuration = Mathf.Min(Constants.MAX_PATH_DURATION, currentPath.Length * Constants.POINT_MOVE_DURATION); //To avoid too long wait durations
         transform.DOPath(currentPath, _pathDuration).SetTarget(this).SetEase(Ease.Linear)
             .OnComplete(() =>
             {
                 _isMoving = false;
-                _currentPointIndex = _wayPoints.Count - 1;
+                _currentPointIndex = endIndex;
             });
     }
+
+
 
     private void MoveToPoint(int index)
     {
