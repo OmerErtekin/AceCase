@@ -70,8 +70,3 @@ public class WaypointPathCreator : MonoBehaviour,IWaypointService
         return path;
     }
 }
-
-interface IWaypointService
-{
-    public List<GameObject> Waypoints { get; }
-}
