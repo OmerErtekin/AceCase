@@ -3,10 +3,12 @@ using System.Collections.Generic;
 
 public class WaypointPathCreator : MonoBehaviour,IWaypointService
 {
+    #region Variables
     [SerializeField] private GameObject _waypointPrefab;
     public List<GameObject> Waypoints { get; private set; }
-
-    void Awake()
+    #endregion
+    
+    private void Awake()
     {
         ServiceLocator.Instance.RegisterService<IWaypointService>(this);
         Waypoints = new List<GameObject>();

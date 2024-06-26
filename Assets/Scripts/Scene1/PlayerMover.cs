@@ -5,10 +5,13 @@ using UnityEngine;
 
 public class PlayerMover : MonoBehaviour,IPlayerMoveService
 {
+    #region Variables
     private List<GameObject> _wayPoints;
     private int _currentPointIndex;
     private bool _isMoving;
     private float _pathDuration;
+    #endregion
+
     private void Awake()
     {
         ServiceLocator.Instance.RegisterService<IPlayerMoveService>(this);
@@ -23,15 +26,15 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
     public void MoveToNextPoint()
     {
         if(_isMoving) return;
-        
-        MoveToPoint(_currentPointIndex < _wayPoints.Count -1 ? _currentPointIndex+1 : 0);
+
+        MoveToPoint(_currentPointIndex < _wayPoints.Count - 1 ? _currentPointIndex + 1 : 0);
     }
 
     public void MoveToPreviousPoint()
     {
-        if(_isMoving || _currentPointIndex == 0) return;
+        if(_isMoving) return;
 
-        MoveToPoint(_currentPointIndex - 1);
+        MoveToPoint(_currentPointIndex > 0 ? _currentPointIndex - 1 : _wayPoints.Count - 1);
     }
 
     public void MoveToTheEnd()

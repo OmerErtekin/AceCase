@@ -7,15 +7,19 @@ using UnityEngine.UI;
 
 public class LevelHandler : MonoBehaviour,ILevelService
 {
+    #region Variables
     [SerializeField] private Slider _progressSlider;
     [SerializeField] private TMP_Text _levelText;
     [SerializeField] private Transform _starTransform;
     private int _currentLevel, _currentLevelOnText, _currentExp;
     private Coroutine _barSetRoutine;
     private readonly List<float> _barTargets = new();
+    #endregion
 
-    private int ExpForNextLevel => _currentLevel * 1000;
+    #region Properties
+    private int ExpForNextLevel => _currentLevel * Constants.EXP_AT_EACH_CLICK;
     private float ProgressRate => _currentExp / (float)ExpForNextLevel;
+    #endregion
 
     private void Awake()
     {
@@ -63,6 +67,8 @@ public class LevelHandler : MonoBehaviour,ILevelService
             .SetEase(Ease.OutBack);
     }
 
+    //This function can be achieved with DoTween Sequences. But i chose to do it manually. 
+    //If it seems a bit over-engineered sorry for that !
     private IEnumerator SetProgressBarRoutine()
     {
         while (_barTargets.Count > 0)
@@ -80,7 +86,7 @@ public class LevelHandler : MonoBehaviour,ILevelService
                 UpdateLevelUIOnNextLevel();
                 
                 //Set the bar to where it should be after next level
-                if (_barTargets[0] % 1 > Mathf.Epsilon)
+                if (_barTargets[0] % 1 > 0)
                 {
                     yield return _progressSlider.DOValue(_barTargets[0] % 1, Constants.BAR_MOVE_DURATION).SetEase(Ease.Linear).From(0).WaitForCompletion();
                 }

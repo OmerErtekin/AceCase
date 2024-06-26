@@ -3,14 +3,15 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
-
+    #region Components
     [SerializeField] private Button NextWaypointButton;
     [SerializeField] private Button GoToEndButton;
     [SerializeField] private Button GoToEndOnPathButton;
     [SerializeField] private Button GoToPreviousButton;
     [SerializeField] private Button GoToStartButton;
     private IPlayerMoveService _moveService;
-        
+    #endregion
+
     private void Start()
     {
         NextWaypointButton.onClick.AddListener(OnNextWaypoint);
