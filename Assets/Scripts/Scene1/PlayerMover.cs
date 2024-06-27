@@ -70,7 +70,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
         }
         else
         {
-            currentPath = _wayPoints.GetRange(0,_currentPointIndex).Select(t => t.transform.position).Reverse().ToArray();
+            currentPath = _wayPoints.GetRange(endIndex,startIndex).Select(t => t.transform.position).Reverse().ToArray();
         }
         
         _pathDuration = Mathf.Min(Constants.MAX_PATH_DURATION, currentPath.Length * Constants.POINT_MOVE_DURATION); //To avoid too long wait durations
