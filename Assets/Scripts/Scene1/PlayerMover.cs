@@ -56,7 +56,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
     {
         if(_isMoving || _currentPointIndex == 0) return;
 
-        MoveOnPath(_currentPointIndex,0,true);
+        MoveOnPath(_currentPointIndex,2,true);
     }
 
     private void MoveOnPath(int startIndex, int endIndex,bool isBackwards)
@@ -70,7 +70,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
         }
         else
         {
-            currentPath = _wayPoints.GetRange(endIndex,startIndex).Select(t => t.transform.position).Reverse().ToArray();
+            currentPath = _wayPoints.GetRange(endIndex,startIndex - endIndex).Select(t => t.transform.position).Reverse().ToArray();
         }
         
         _pathDuration = Mathf.Min(Constants.MAX_PATH_DURATION, currentPath.Length * Constants.POINT_MOVE_DURATION); //To avoid too long wait durations
