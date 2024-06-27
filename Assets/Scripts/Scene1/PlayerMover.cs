@@ -56,7 +56,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
     {
         if(_isMoving || _currentPointIndex == 0) return;
 
-        MoveOnPath(_currentPointIndex,2,true);
+        MoveOnPath(_currentPointIndex,0,true);
     }
 
     private void MoveOnPath(int startIndex, int endIndex,bool isBackwards)
