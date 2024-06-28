@@ -10,6 +10,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
     private int _currentPointIndex;
     private bool _isMoving;
     private float _pathDuration;
+    private int _queuedStepCount;
     #endregion
 
     private void Awake()
@@ -25,14 +26,22 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
 
     public void MoveToNextPoint()
     {
-        if(_isMoving) return;
+        if (_isMoving)
+        {
+            _queuedStepCount++;
+            return;
+        }
 
         MoveToPoint(_currentPointIndex < _wayPoints.Count - 1 ? _currentPointIndex + 1 : 0);
     }
 
     public void MoveToPreviousPoint()
     {
-        if(_isMoving) return;
+        if (_isMoving)
+        {
+            _queuedStepCount--;
+            return;
+        }
 
         MoveToPoint(_currentPointIndex > 0 ? _currentPointIndex - 1 : _wayPoints.Count - 1);
     }
@@ -91,6 +100,19 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
             {
                 _isMoving = false;
                 _currentPointIndex = index;
+                switch (_queuedStepCount)
+                {
+                    case 0:
+                        return;
+                    case > 0:
+                        _queuedStepCount--;
+                        MoveToPoint(_currentPointIndex + 1);
+                        break;
+                    case < 0:
+                        _queuedStepCount++;
+                        MoveToPoint(_currentPointIndex - 1);
+                        break;
+                }
             });
     }
 }
