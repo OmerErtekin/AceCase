@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
@@ -10,7 +11,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
     private int _currentPointIndex;
     private bool _isMoving;
     private float _pathDuration;
-    private int _queuedStepCount;
+    private readonly Queue<MovementAction> _queuedSteps = new();
     #endregion
 
     private void Awake()
@@ -28,7 +29,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
     {
         if (_isMoving)
         {
-            _queuedStepCount++;
+            _queuedSteps.Enqueue(MovementAction.Forward);
             return;
         }
 
@@ -39,7 +40,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
     {
         if (_isMoving)
         {
-            _queuedStepCount--;
+            _queuedSteps.Enqueue(MovementAction.Backward);
             return;
         }
 
@@ -49,21 +50,39 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
 
     public void MoveToStart()
     {
-        if(_isMoving || _currentPointIndex == 0) return;
+        if(_currentPointIndex == 0) return;
+
+        if (_isMoving)
+        {
+            _queuedSteps.Enqueue(MovementAction.GoToStart);
+            return;
+        }
         
         MoveToPoint(0);
     }
     
     public void MoveToEndOnPath()
     {
-        if(_isMoving || _currentPointIndex == _wayPoints.Count -1) return;
+        if (_currentPointIndex == _wayPoints.Count - 1)  return;
+
+        if (_isMoving)
+        {
+            _queuedSteps.Enqueue(MovementAction.GoToEnd);
+            return;
+        }
 
         MoveOnPath(_currentPointIndex,_wayPoints.Count-1,false);
     }
     
     public void MoveToStartOnPath()
     {
-        if(_isMoving || _currentPointIndex == 0) return;
+        if(_currentPointIndex == 0) return;
+
+        if (_isMoving)
+        {
+            _queuedSteps.Enqueue(MovementAction.GoToStartOnpPath);
+            return;
+        }
 
         MoveOnPath(_currentPointIndex,0,true);
     }
@@ -88,6 +107,7 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
             {
                 _isMoving = false;
                 _currentPointIndex = endIndex;
+                PerformNextQueuedAction();
             });
     }
     
@@ -100,19 +120,43 @@ public class PlayerMover : MonoBehaviour,IPlayerMoveService
             {
                 _isMoving = false;
                 _currentPointIndex = index;
-                switch (_queuedStepCount)
-                {
-                    case 0:
-                        return;
-                    case > 0:
-                        _queuedStepCount--;
-                        MoveToPoint(_currentPointIndex + 1);
-                        break;
-                    case < 0:
-                        _queuedStepCount++;
-                        MoveToPoint(_currentPointIndex - 1);
-                        break;
-                }
+                PerformNextQueuedAction();
             });
     }
+
+    private void PerformNextQueuedAction()
+    {
+        if(_queuedSteps.Count == 0) return;
+
+        switch (_queuedSteps.Dequeue())
+        {
+            case MovementAction.Forward:
+                MoveToNextPoint();
+                break;
+            case MovementAction.Backward:
+                MoveToPreviousPoint();
+                break;
+            case MovementAction.GoToEnd:
+                MoveToEndOnPath();
+                break;
+            case MovementAction.GoToStart:
+                MoveToStart();
+                break;
+            case MovementAction.GoToStartOnpPath:
+                MoveToStartOnPath();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+    
+}
+
+public enum MovementAction
+{
+    Forward,
+    Backward,
+    GoToEnd,
+    GoToStart,
+    GoToStartOnpPath
 }
